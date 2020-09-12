@@ -18,15 +18,7 @@ const formSchema = yup.object().shape({
 })
 
 export default function Form () {
-    // const [formState, setFormState] = useState ({
-    //     name: "",
-    //     size: "",
-    //     pepperoni: false,
-    //     sausage: false,
-    //     onions: false,
-    //     salami: false,
-    //     instructions: ""
-    // });
+
 
     const blankState = {
    
@@ -190,7 +182,6 @@ const [formState, setFormState] = useState(blankState);
       <button disabled={buttonDisabled}>Order</button>
     </form>
 
-  <pre>Here's what you ordered: {JSON.stringify(formState)}</pre>
   </>
   );
 };

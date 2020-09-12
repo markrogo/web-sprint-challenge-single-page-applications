@@ -4,7 +4,9 @@ import axios from 'axios';
 import * as yup from 'yup';
 
 const formSchema = yup.object().shape({
-    name: yup.string().required ("Name must be at least 2 characpeprs"),
+    name: yup.string()
+        .min (2, "must include at least two characters")
+        .required ("Name must be at least 2 characters"),
     size: yup.string().required ("Select a size from the menu"),
     pepperoni: yup.boolean(),
     sausage: yup.boolean(),
@@ -16,7 +18,18 @@ const formSchema = yup.object().shape({
 })
 
 export default function Form () {
-    const [formState, setFormState] = useState ({
+    // const [formState, setFormState] = useState ({
+    //     name: "",
+    //     size: "",
+    //     pepperoni: false,
+    //     sausage: false,
+    //     onions: false,
+    //     salami: false,
+    //     instructions: ""
+    // });
+
+    const blankState = {
+   
         name: "",
         size: "",
         pepperoni: false,
@@ -24,8 +37,19 @@ export default function Form () {
         onions: false,
         salami: false,
         instructions: ""
-    });
+    };
 
+const [formState, setFormState] = useState(blankState); 
+
+    const [buttonDisabled, setButtonDisabled] = useState(true);
+    useEffect(() => {
+      formSchema.isValid(formState).then(valid => {
+        setButtonDisabled(!valid);
+      });
+    }, [formState]);
+
+   
+    
     const [errorState, setErrorState] = useState ({
         name: "",
         size: "",
@@ -72,14 +96,16 @@ export default function Form () {
           .post("https://reqres.in/api/users", formState)
           .then(response => console.log(response))
           .catch(err => console.log(err));
+        setFormState (blankState);
       };
 
   return (
+      <>
     <form onSubmit={formSubmit}>
         <label htmlFor="name">
         Name
         <input
-          type="pepxt"
+          type="text"
           name="name"
           id="name"
           value={formState.name}
@@ -97,11 +123,15 @@ export default function Form () {
           id="size"
           onChange={inputChange}
         >
-          <option value="12-inch">12 inch</option>
-          <option value="14-inch">14 inch</option>
-          <option value="16-inch">16 inch</option>
-          <option value="20-inch">20 inch</option>
-        </select>
+            <option value ="">Select a size from the dropdown</option>            
+            <option value="12-inch">12 inch</option>
+            <option value="14-inch">14 inch</option>
+            <option value="16-inch">16 inch</option>
+            <option value="20-inch">20 inch</option>
+            </select>
+            {errorState.size.length > 0 ? (
+                     <p className="error">{errorState.size}</p>
+                ) : null}
         </label>
 
         <label htmlFor="pepperoni">
@@ -157,7 +187,11 @@ export default function Form () {
         />
        
       </label>
+      <button disabled={buttonDisabled}>Order</button>
     </form>
+
+  <pre>Here's what you ordered: {JSON.stringify(formState)}</pre>
+  </>
   );
 };
 
